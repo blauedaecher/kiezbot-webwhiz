@@ -89,9 +89,13 @@ async function bootstrap() {
   const logger = new Logger('CrawlerWorker');
 
   // Celery Worker Init
-  const redisConnectionStr = `redis://${appConfigService.get(
-    'redisHost',
-  )}:${appConfigService.get('redisPort')}/`;
+
+  let redisConnectionStr;
+  if (process.env['REDIS_URL']) {
+    redisConnectionStr = process.env['REDIS_URL'];
+  } else {
+    redisConnectionStr = `redis://${process.env['REDIS_HOST']}:${process.env['REDIS_PORT']}`;
+  }
   const worker = celery.createWorker(
     redisConnectionStr,
     redisConnectionStr,
