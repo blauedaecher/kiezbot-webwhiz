@@ -10,9 +10,7 @@ services:
   nodejs_worker:
     build: .
     volumes:
-      - type: bind
-        source: /mnt/volume_fra1_01
-        target: /storage1
+      - /mnt/volume_fra1_01:/storage1
     command: node dist/crawler.main.js
 
   python_worker:
