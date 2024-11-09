@@ -1,4 +1,3 @@
-import os
 import traceback
 from typing import List, Optional, TypedDict
 
@@ -6,7 +5,7 @@ import numpy as np
 import pandas as pd
 from bson import json_util
 from bson.objectid import ObjectId
-from openai.embeddings_utils import cosine_similarity
+from scipy.spatial.distance import cosine
 from pymongo.collection import Collection
 from pymongo.database import Database
 from redis import Redis
@@ -76,7 +75,7 @@ def get_top_chunks(
         df = pd.DataFrame(embeddings["embeddings"])
         df["embeddings"] = df.embeddings.apply(np.array)
         df["similarity"] = df.embeddings.apply(
-            lambda x: cosine_similarity(x, target_embedding)
+            lambda x: cosine(x, target_embedding)
         )
 
         results = json_util.dumps(

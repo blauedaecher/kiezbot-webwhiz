@@ -5,12 +5,12 @@ import pymongo
 import redis
 from celery import Celery
 from dotenv import load_dotenv
+import ssl
 
 from cosine_similarity import get_top_chunks
 from extract_text import get_text_from_pdf, get_text_from_html
 
 load_dotenv()
-
 
 # Redis related
 REDIS_HOST = os.getenv("REDIS_HOST") or "localhost"
@@ -28,7 +28,11 @@ mongo = pymongo.MongoClient(MONGO_URI)
 db = mongo[MONGO_DBNAME]
 
 # Celery worker related
-REDIS_CONN_STR = f"redis://{REDIS_HOST}:{REDIS_PORT}/"
+if REDIS_URL is not None:
+    REDIS_CONN_STR = REDIS_URL
+else:
+    REDIS_CONN_STR = f"{REDIS_HOST}:{REDIS_PORT}/?ssl_cert_reqs=none"
+
 app = Celery("cosine_similiary_worker", broker=REDIS_CONN_STR, backend=REDIS_CONN_STR)
 app.conf.result_expires = 60
 
