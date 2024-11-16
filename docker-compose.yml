@@ -37,3 +37,7 @@ services:
     command: [nginx-debug, '-g', 'daemon off;']
     ports:
       - "80:80"
+    depends_on:
+      - web
+      - frontend
+      - widget
