@@ -33,7 +33,10 @@ services:
   nginx:
     image: nginx
     volumes:
+      - web-root:/var/www/html
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
     command: [nginx-debug, '-g', 'daemon off;']
     ports:
       - "80:80"
@@ -41,3 +44,19 @@ services:
       - web
       - frontend
       - widget
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - web-root:/var/www/html
+    depends_on:
+      - nginx
+    command: certonly --webroot --webroot-path=/var/www/html --email soeren@blauedaecher.com --agree-tos --no-eff-email --staging -d app.digitalerguide.com  -d api.digitalerguide.com -d widget.digitalerguide.com
+
+volumes:
+  certbot-etc:
+  certbot-var:
+  web-root:
